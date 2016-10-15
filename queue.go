@@ -24,21 +24,31 @@ func (q *Queue) Size() int {
 	return q.list.Len()
 }
 
-// Enqueue puts an element into queue.
-func (q *Queue) Enqueue(val interface{}) *list.Element {
+// Put an element into queue.
+func (q *Queue) Put(val interface{}) *list.Element {
 	q.sem <- 1
 	e := q.list.PushFront(val)
 	<-q.sem
 	return e
 }
 
-// Dequeue puts an element out of the queue.
-func (q *Queue) Dequeue() *list.Element {
+// Get an element out of the queue.
+func (q *Queue) Get() *list.Element {
 	q.sem <- 1
 	e := q.list.Back()
 	q.list.Remove(e)
 	<-q.sem
 	return e
+}
+
+// Len get the length of the queue.
+func (q *Queue) Len() int {
+	return q.list.Len()
+}
+
+// Empty tests if the queue is empty.
+func (q *Queue) Empty() bool {
+	return q.list.Len() == 0
 }
 
 // Queue returns the element in the queue only if func queueFunc(element) returns true..
