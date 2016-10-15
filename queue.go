@@ -19,26 +19,27 @@ func New() *Queue {
 	return &Queue{sem, list}
 }
 
-// Get size of the queue
-func (q *Queue) Size() int {
-	return q.list.Len()
-}
-
 // Put an element into queue.
-func (q *Queue) Put(val interface{}) *list.Element {
+func (q *Queue) Put(val interface{}) {
 	q.sem <- 1
-	e := q.list.PushFront(val)
+	q.list.PushFront(val)
 	<-q.sem
-	return e
 }
 
 // Get an element out of the queue.
 func (q *Queue) Get() interface{} {
 	q.sem <- 1
 	e := q.list.Back()
-	q.list.Remove(e)
+	if e != nil {
+		q.list.Remove(e)
+	}
 	<-q.sem
-	return e.Value
+
+	if e != nil {
+		return e.Value
+	} else {
+		return nil
+	}
 }
 
 // Len get the length of the queue.
@@ -51,7 +52,7 @@ func (q *Queue) Empty() bool {
 	return q.list.Len() == 0
 }
 
-// Queue returns the element in the queue only if func queueFunc(element) returns true..
+// Queue returns the element in the queue only if func queueFunc(element) returns true.
 func (q *Queue) Query(queryFunc interface{}) *list.Element {
 	q.sem <- 1
 	e := q.list.Front()
