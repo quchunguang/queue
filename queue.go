@@ -33,12 +33,12 @@ func (q *Queue) Put(val interface{}) *list.Element {
 }
 
 // Get an element out of the queue.
-func (q *Queue) Get() *list.Element {
+func (q *Queue) Get() interface{} {
 	q.sem <- 1
 	e := q.list.Back()
 	q.list.Remove(e)
 	<-q.sem
-	return e
+	return e.Value
 }
 
 // Len get the length of the queue.
