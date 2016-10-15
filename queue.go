@@ -13,7 +13,7 @@ type Queue struct {
 var tFunc func(val interface{}) bool
 
 // Create a new Queue and return.
-func NewQueue() *Queue {
+func New() *Queue {
 	sem := make(chan int, 1)
 	list := list.New()
 	return &Queue{sem, list}
