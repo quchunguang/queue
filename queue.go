@@ -4,14 +4,16 @@ import (
 	"container/list"
 )
 
+// Queue is describe as a list with lock
 type Queue struct {
 	sem  chan int
 	list *list.List
 }
 
+// CallbackFunc type describe any operation on each element in stack.
 type CallbackFunc func(val interface{}) bool
 
-// Create a new Queue and return.
+// New create a new Queue.
 func New() *Queue {
 	sem := make(chan int, 1)
 	list := list.New()
@@ -36,9 +38,8 @@ func (q *Queue) Get() interface{} {
 
 	if e != nil {
 		return e.Value
-	} else {
-		return nil
 	}
+	return nil
 }
 
 // Len get the length of the queue.
