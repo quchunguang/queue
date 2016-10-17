@@ -51,12 +51,12 @@ func (q *Queue) Empty() bool {
 	return q.list.Len() == 0
 }
 
-// Map returns the first element in the queue causing queryFunc returns true.
-func (q *Queue) Map(queryFunc CallbackFunc) interface{} {
+// Map returns the first element in the queue causing mapFunc returns true.
+func (q *Queue) Map(mapFunc CallbackFunc) interface{} {
 	q.sem <- 1
 	e := q.list.Front()
 	for e != nil {
-		if queryFunc(e.Value) {
+		if mapFunc(e.Value) {
 			<-q.sem
 			return e.Value
 		}
@@ -74,9 +74,8 @@ func (q *Queue) Contain(val interface{}) bool {
 		if e.Value == val {
 			<-q.sem
 			return true
-		} else {
-			e = e.Next()
 		}
+		e = e.Next()
 	}
 	<-q.sem
 	return false
