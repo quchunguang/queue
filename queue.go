@@ -2,7 +2,6 @@ package queue
 
 import (
 	"container/list"
-	"reflect"
 )
 
 type Queue struct {
@@ -10,7 +9,7 @@ type Queue struct {
 	list *list.List
 }
 
-var tFunc func(val interface{}) bool
+type CallbackFunc func(val interface{}) bool
 
 // Create a new Queue and return.
 func New() *Queue {
@@ -52,19 +51,14 @@ func (q *Queue) Empty() bool {
 	return q.list.Len() == 0
 }
 
-// Queue returns the element in the queue only if func queueFunc(element) returns true.
-func (q *Queue) Query(queryFunc interface{}) *list.Element {
+// Map returns the first element in the queue causing queryFunc returns true.
+func (q *Queue) Map(queryFunc CallbackFunc) interface{} {
 	q.sem <- 1
 	e := q.list.Front()
 	for e != nil {
-		if reflect.TypeOf(queryFunc) == reflect.TypeOf(tFunc) {
-			if queryFunc.(func(val interface{}) bool)(e.Value) {
-				<-q.sem
-				return e
-			}
-		} else {
+		if queryFunc(e.Value) {
 			<-q.sem
-			return nil
+			return e.Value
 		}
 		e = e.Next()
 	}
